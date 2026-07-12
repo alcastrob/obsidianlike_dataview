@@ -1,0 +1,121 @@
+body {
+  padding: 4px 8px 10px;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  color: var(--vscode-foreground);
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.cal-header button {
+  background: none;
+  border: none;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.cal-header button:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.cal-month-label {
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: capitalize;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.cal-month-label:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.cal-month-picker {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+table.cal-grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cal-grid th {
+  font-weight: 400;
+  font-size: 0.85em;
+  opacity: 0.7;
+  padding-bottom: 4px;
+}
+
+.cal-grid th.cal-week-col,
+.cal-grid td.cal-week-num {
+  width: 26px;
+}
+
+.cal-cell {
+  text-align: center;
+  vertical-align: top;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 0 4px;
+}
+
+.cal-cell:hover,
+.cal-week-num:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.cal-week-num {
+  text-align: center;
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 0.85em;
+  border-radius: 4px;
+  vertical-align: top;
+  padding-top: 4px;
+}
+
+.cal-day-num {
+  display: inline-block;
+  min-width: 20px;
+  border-radius: 50%;
+}
+
+.cal-cell.out-of-month .cal-day-num {
+  opacity: 0.35;
+}
+
+.cal-cell.is-today .cal-day-num {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.cal-dots {
+  display: flex;
+  justify-content: center;
+  gap: 1px;
+  height: 6px;
+  margin-top: 2px;
+}
+
+.cal-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--vscode-charts-blue, var(--vscode-focusBorder));
+}
+
+.cal-empty-state {
+  opacity: 0.7;
+  font-size: 0.9em;
+  padding: 8px 2px;
+}

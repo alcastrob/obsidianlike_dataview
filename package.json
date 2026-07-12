@@ -1,0 +1,83 @@
+{
+  "name": "obsidianlike-dataview",
+  "displayName": "Obsidian-like Dataview",
+  "description": "Dataview-style DQL and DataviewJS queries over Markdown notes, for VS Code.",
+  "version": "0.1.0",
+  "publisher": "angelCastro",
+  "icon": "media/obsidian-icon-violeta.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "markdown.markdownItPlugins": true,
+    "commands": [
+      {
+        "command": "obsidianlikeDataview.reindexWorkspace",
+        "title": "Dataview: Reindex Workspace"
+      },
+      {
+        "command": "obsidianlikeDataview.showQueryResult",
+        "title": "Dataview: Show Query Result for Block at Cursor"
+      }
+    ],
+    "configuration": {
+      "title": "Obsidian-like Dataview",
+      "properties": {
+        "obsidianlikeDataview.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.md"
+          ],
+          "description": "Glob patterns for files to include in the workspace index."
+        },
+        "obsidianlikeDataview.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**"
+          ],
+          "description": "Glob patterns for files to exclude from the workspace index."
+        },
+        "obsidianlikeDataview.dataviewJs.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable execution of ```dataviewjs code blocks (sandboxed with Node vm)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "mocha out/test/**/*.test.js --timeout 10000",
+    "package": "npm run compile && vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
+    "mocha": "^10.3.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "minimatch": "^9.0.3"
+  }
+}
