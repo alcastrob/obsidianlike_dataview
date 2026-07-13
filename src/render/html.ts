@@ -23,6 +23,14 @@ function cellHtml(v: DVValue): string {
   return esc(renderValue(v));
 }
 
+function taskItemHtml(t: { text: string; completed: boolean }): string {
+  return `<li><input type="checkbox" disabled ${t.completed ? "checked" : ""}/> <span>${esc(t.text)}</span></li>`;
+}
+
+function taskListHtml(tasks: Array<{ text: string; completed: boolean }>): string {
+  return `<ul class="dv-task-list">\n${tasks.map(taskItemHtml).join("\n")}\n</ul>`;
+}
+
 export function renderQueryResultHtml(result: QueryResult): string {
   switch (result.type) {
     case "ERROR":
@@ -48,16 +56,16 @@ export function renderQueryResultHtml(result: QueryResult): string {
     }
 
     case "TASK": {
+      // No GROUP BY: flat list, no per-file heading — matches Obsidian Dataview's default
+      // TASK rendering (grouping is opt-in via an explicit GROUP BY clause).
+      if (result.groups === null) {
+        if (result.tasks.length === 0) return `<div class="dv-empty">No results.</div>`;
+        return taskListHtml(result.tasks);
+      }
       if (result.groups.length === 0) return `<div class="dv-empty">No results.</div>`;
-      const groups = result.groups
-        .map((g) => {
-          const items = g.tasks
-            .map((t) => `<li><input type="checkbox" disabled ${t.completed ? "checked" : ""}/> ${esc(t.text)}</li>`)
-            .join("\n");
-          return `<div class="dv-task-group">${linkHtml(new DVLink(g.page.file.path, g.page.file.name))}<ul class="dv-task-list">\n${items}\n</ul></div>`;
-        })
+      return result.groups
+        .map((g) => `<div class="dv-task-group">${cellHtml(g.key)}${taskListHtml(g.tasks)}</div>`)
         .join("\n");
-      return groups;
     }
 
     case "CALENDAR": {
@@ -97,11 +105,7 @@ export function renderDataviewJsOutputHtml(nodes: DVJsOutputNode[], error?: stri
         );
         break;
       case "taskList":
-        parts.push(
-          `<ul class="dv-task-list">\n${node.tasks
-            .map((t) => `<li><input type="checkbox" disabled ${t.completed ? "checked" : ""}/> ${esc(t.text)}</li>`)
-            .join("\n")}\n</ul>`
-        );
+        parts.push(taskListHtml(node.tasks));
         break;
       case "html":
         parts.push(node.html);

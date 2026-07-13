@@ -55,14 +55,26 @@ describe("query engine", () => {
     }
   });
 
-  it("runs a TASK query and groups by page", () => {
+  it("runs a plain TASK query as a flat list (no per-file grouping by default)", () => {
     const q = parseQuery(`TASK FROM "projects" WHERE !completed`);
     const result = runQuery(q, pages, { resolveLinkPath });
     assert.strictEqual(result.type, "TASK");
     if (result.type === "TASK") {
-      assert.strictEqual(result.groups.length, 1);
-      assert.strictEqual(result.groups[0].tasks.length, 1);
-      assert.strictEqual(result.groups[0].tasks[0].text, "task one");
+      assert.strictEqual(result.groups, null);
+      assert.strictEqual(result.tasks.length, 1);
+      assert.strictEqual(result.tasks[0].text, "task one");
+    }
+  });
+
+  it("groups a TASK query only when GROUP BY is explicit", () => {
+    const q = parseQuery(`TASK FROM "projects" GROUP BY file.link`);
+    const result = runQuery(q, pages, { resolveLinkPath });
+    assert.strictEqual(result.type, "TASK");
+    if (result.type === "TASK") {
+      assert.notStrictEqual(result.groups, null);
+      // alpha.md has 2 tasks, beta.md has none => 1 group
+      assert.strictEqual(result.groups?.length, 1);
+      assert.strictEqual(result.groups?.[0].tasks.length, 2);
     }
   });
 
