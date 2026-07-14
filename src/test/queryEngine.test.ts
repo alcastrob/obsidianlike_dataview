@@ -28,6 +28,13 @@ describe("query engine", () => {
     if (result.type === "LIST") assert.strictEqual(result.rows.length, 2);
   });
 
+  it("treats FROM \"/\" as the whole vault, including subfolders", () => {
+    const q = parseQuery(`LIST FROM "/"`);
+    const result = runQuery(q, pages, { resolveLinkPath });
+    assert.strictEqual(result.type, "LIST");
+    if (result.type === "LIST") assert.strictEqual(result.rows.length, pages.length);
+  });
+
   it("runs a TABLE query with WHERE and SORT", () => {
     const q = parseQuery(`TABLE priority FROM "projects" WHERE priority > 1 SORT priority DESC`);
     const result = runQuery(q, pages, { resolveLinkPath });
