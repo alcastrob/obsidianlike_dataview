@@ -47,6 +47,19 @@ npm test
 
 Press F5 in VS Code to launch an Extension Development Host.
 
-## Security note
+## Security
 
-`dataviewjs` blocks execute arbitrary JavaScript found in your own notes via Node's `vm` module. `vm` is not a hard security boundary — it prevents accidental access to `require`/`process`/the filesystem from well-behaved scripts, but should not be relied on against a maliciously crafted note from an untrusted source. Disable `obsidianlikeDataview.dataviewJs.enabled` if you open workspaces you don't fully trust.
+### No outbound network calls
+
+This extension makes **no HTTP/HTTPS requests, no telemetry, no analytics, no diagnostics/log collection of any kind**. Everything runs locally against the files already open in your VS Code workspace. This was verified by:
+
+- Grepping the entire `src/` tree (case-insensitive) for `fetch`, `XMLHttpRequest`, `axios`, `http.request`/`https.request`, `require('http'|'net'|'dns'|'tls')`, `WebSocket`, `ws://`/`wss://`, `telemetry`, `analytics`, `child_process`/`exec`/`spawn`, dynamic `eval(`/`Function(`/`import(`, and any `http://`/`https://` literal — zero matches.
+- Listing every `import` across `src/`: the only modules pulled in are `vscode`, Node's built-in `path` and `vm`, and the npm dependency `gray-matter` (YAML frontmatter parsing). None of Node's networking modules (`http`, `https`, `net`, `dns`, `tls`) are imported anywhere.
+- Reviewing `gray-matter` and its own dependency `js-yaml`'s installed source for the same network-call patterns — none found.
+- `render/html.ts` only ever emits `<div>`, `<ul>`/`<li>`, `<table>`, `<a href="#" data-wiki="...">`, `<input type="checkbox" disabled>`, `<h1>`–`<h6>`, `<p>`, all with escaped text — never `<img src>`, `<script>`, `<iframe>`, or `<link>`, so the rendered output itself can't trigger a request either.
+
+`minimatch` is listed as a runtime dependency in `package.json` but isn't actually imported anywhere in `src/` (dead weight from early scaffolding, harmless but could be dropped). The devDependency `@vscode/vsce` (used only to build the `.vsix`, never shipped inside it) pulls in `keytar`/`@vscode/vsce-sign`, which do have `install`/`postinstall` scripts that can fetch prebuilt binaries — but that only runs on a developer's machine during `npm install`, not in the installed extension; the packaged `.vsix`'s `node_modules/` only contains `gray-matter`'s own transitive dependencies.
+
+### `dataviewjs` sandboxing
+
+`dataviewjs` blocks execute arbitrary JavaScript found in your own notes via Node's `vm` module. The sandbox context exposes only `dv`, a `console` stub, and a handful of safe intrinsics (`Math`, `JSON`, `Date`, `Array`, `Object`, `String`, `Number`, `Boolean`, `RegExp`) — verified empirically that `fetch`, `XMLHttpRequest`, `require`, `process`, `Buffer`, and `global` are all `undefined` inside it. That said, `vm` is **not a hard security boundary** — it prevents accidental access from well-behaved scripts, but should not be relied on against a maliciously crafted note from an untrusted source. Disable `obsidianlikeDataview.dataviewJs.enabled` if you open workspaces you don't fully trust.
