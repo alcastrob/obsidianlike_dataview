@@ -5,7 +5,7 @@ Dataview-style DQL and DataviewJS queries over Markdown notes, for VS Code.
 ## What it does
 
 - Indexes every Markdown file in the workspace (frontmatter, inline `key:: value` fields, `#tags`, `[[wikilinks]]`, `- [ ]` tasks) and keeps the index live via a file watcher.
-- Parses and runs `LIST` / `TABLE` / `TASK` / `CALENDAR` DQL queries (`FROM`, `WHERE`, `SORT`, `GROUP BY`, `LIMIT`, `FLATTEN`, most Dataview built-in functions).
+- Parses and runs `LIST` / `TABLE` / `TASK` / `CALENDAR` DQL queries (`FROM`, `WHERE`, `SORT`, `GROUP BY`, `LIMIT`, `FLATTEN`, most Dataview built-in functions). Identifiers support full Unicode letters, so accented field/column names (`Área`, `Posición`, `Descripción`, ...) work as expected.
 - Runs ```dataviewjs blocks in a sandboxed Node `vm` context exposing a `dv` API subset (`dv.pages`, `dv.page`, `dv.current`, `dv.table`, `dv.list`, `dv.taskList`, `dv.header`, `dv.paragraph`).
 - Renders ```dataview / ```dql / ```dataviewjs fenced blocks directly in VS Code's built-in Markdown preview.
 

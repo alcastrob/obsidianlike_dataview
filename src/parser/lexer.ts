@@ -82,9 +82,9 @@ export class DQLLexer {
         continue;
       }
 
-      if (/[A-Za-z_]/.test(c)) {
+      if (/[\p{L}_]/u.test(c)) {
         let j = this.i;
-        while (j < s.length && /[\w-]/.test(s[j])) j++;
+        while (j < s.length && /[\p{L}\p{N}_-]/u.test(s[j])) j++;
         this.tokens.push({ type: "ident", value: s.slice(this.i, j), pos: this.i });
         this.i = j;
         continue;
