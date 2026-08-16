@@ -63,16 +63,18 @@
   },
   "scripts": {
     "compile": "tsc -p ./",
+    "bundle": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --minify",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "mocha out/test/**/*.test.js --timeout 10000",
-    "package": "npm run compile && vsce package --allow-missing-repository"
+    "package": "npm run compile && npm run bundle && vsce package --allow-missing-repository"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.20.0",
     "mocha": "^10.3.0",
     "typescript": "^5.4.0"
   },
